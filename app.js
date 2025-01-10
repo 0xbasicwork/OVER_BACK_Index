@@ -37,7 +37,7 @@ app.get('/', async (req, res) => {
             score: latestData.score,
             label: latestData.label,
             components: latestData.components,
-            lastUpdated,
+            lastUpdated: latestData.timestamp || new Date().toISOString(),
             error: null
         });
     } catch (error) {

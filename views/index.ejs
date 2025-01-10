@@ -11,7 +11,9 @@
     <div class="container">
         <header>
             <h1>OVER/BACK Index</h1>
-            <div class="update-time">Last updated: <%= new Date(lastUpdated).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' %></div>
+            <div class="update-time">
+                Last updated: <%= lastUpdated ? new Date(lastUpdated).toLocaleString() + ' UTC' : 'Not available' %>
+            </div>
         </header>
 
         <main>
