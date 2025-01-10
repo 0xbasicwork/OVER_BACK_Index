@@ -1,28 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OVER/BACK Index Widget</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
-    <style>
-        body { margin: 0; padding: 10px; }
-        .container { padding: 0; }
-        .score { font-size: 6rem; }
-        .label { font-size: 2rem; }
-    </style>
+    <title>Over/Back Index Widget</title>
+    <link rel="stylesheet" href="/css/widget-styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="score-container">
-            <div class="meter">
-                <!-- Meter components -->
+    <div class="widget-container">
+        <% if (error) { %>
+            <div class="error"><%= error %></div>
+        <% } else { %>
+            <div class="meter-container">
+                <div class="meter">
+                    <!-- Meter components -->
+                </div>
+                <% if (typeof score !== 'undefined' && score !== null) { %>
+                    <div class="score"><%= score %></div>
+                    <div class="label" data-score="<%= score %>"><%= label %></div>
+                <% } else { %>
+                    <div class="loading">Loading...</div>
+                <% } %>
             </div>
-            <div class="score"><%= score %></div>
-            <div class="label" data-score="<%= score %>"><%= label %></div>
-        </div>
+            <% if (lastUpdated) { %>
+                <div class="last-updated">Last updated: <%= lastUpdated %></div>
+            <% } %>
+        <% } %>
     </div>
-    <script src="/js/main.js"></script>
 </body>
 </html> 

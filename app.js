@@ -1,9 +1,13 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 const DataStorage = require('./data-storage');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Add CORS middleware
+app.use(cors());
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
@@ -47,9 +51,34 @@ app.get('/', async (req, res) => {
 
 // Widget route
 app.get('/widget', async (req, res) => {
-    // Same data fetching as main route
-    const data = {/* ... */};
-    res.render('widget', data);
+    try {
+        // Get latest index data
+        const latestData = await storage.getLatest();
+        
+        if (!latestData) {
+            return res.render('widget', {
+                error: 'No index data available yet',
+                lastUpdated: null
+            });
+        }
+
+        // Format the timestamp
+        const lastUpdated = new Date(latestData.timestamp).toLocaleString();
+
+        res.render('widget', {
+            score: latestData.score,
+            label: latestData.label,
+            components: latestData.components,
+            lastUpdated,
+            error: null
+        });
+    } catch (error) {
+        console.error('Error fetching index:', error);
+        res.render('widget', {
+            error: 'Failed to load index data',
+            lastUpdated: null
+        });
+    }
 });
 
 // Widget embed code route
@@ -76,6 +105,6 @@ app.get('/embed.js', (req, res) => {
 });
 
 // Start server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running on port ${port}`);
 }); 
