@@ -7,11 +7,11 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const MEMECOIN_ADDRESSES = {
     'BONK': 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-    'SAMO': '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+    'PENGU': '2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv',
     'WIF': 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     'POPCAT': '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr',
-    'BOME': 'ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82',
-    'MYRO': 'HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
+    'FART': '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump',
+    'AI16Z': 'HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC',
     'BACK': 'AUiXW4YH5TLNFBgVayFBRvgWTz2ApeeM1Br7FCoyrugj'
 };
 

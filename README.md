@@ -20,6 +20,10 @@ A fear & greed style index for Solana memecoins, analyzing on-chain data, social
 - On-chain Activity (45%): Transaction volume, wallet activity, and success rates
 
 ## Setup
+1. Install dependencies: `npm install`
+2. Create `.env` file with required API keys
+3. Start web server: `npm start`
+4. Start scheduler: `npm run scheduler`
 
 ### Local Development
 

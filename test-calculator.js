@@ -1,7 +1,7 @@
 const OverBackCalculator = require('./over-back-calculator');
 const DataStorage = require('./data-storage');
-const { SolanaDataCollector } = require('./solana-data');
 const CoinGecko = require('./coingecko');
+const mockData = require('./mock-data');
 
 async function testFullIndex() {
     try {
@@ -10,38 +10,27 @@ async function testFullIndex() {
         // Initialize components
         const calculator = new OverBackCalculator();
         const storage = new DataStorage();
-        const solanaCollector = new SolanaDataCollector();
         const coingecko = new CoinGecko();
         
         await storage.initialize();
 
-        // Get real on-chain data
-        console.log('Fetching on-chain metrics...');
-        const onChainData = await solanaCollector.getAllMemecoinMetrics();
-        console.log('On-chain data collected');
+        // Use mock on-chain data
+        console.log('Using mock on-chain metrics...');
+        const onChainData = mockData;
+        console.log('On-chain data loaded');
 
         // Get real market data
         console.log('\nFetching market data...');
         const marketData = await coingecko.getMarketData();
         console.log('Market data collected');
 
-        // Using mock Twitter data until Twitter API integration is complete
+        // Mock Twitter data
         console.log('\nUsing mock social sentiment data...');
         const twitterData = {
             overall_metrics: {
-                sentiment_score: 0.03,    // Neutral-positive sentiment
-                engagement_rate: 0.015,    // 1.5% engagement rate
-                tweet_volume_change: 5     // 5% increase in volume
-            },
-            // Add mock data for each token if needed
-            tokens: {
-                BONK: { sentiment: 0.05, volume: 1000 },
-                BACK: { sentiment: 0.04, volume: 500 },
-                WIF: { sentiment: 0.03, volume: 750 },
-                SAMO: { sentiment: 0.02, volume: 600 },
-                BOME: { sentiment: 0.01, volume: 400 },
-                MYRO: { sentiment: 0.02, volume: 450 },
-                POPCAT: { sentiment: 0.01, volume: 300 }
+                sentiment_score: 0.03,
+                engagement_rate: 0.015,
+                tweet_volume_change: 5
             }
         };
 
@@ -55,7 +44,7 @@ async function testFullIndex() {
 
         // Display detailed results
         console.log('\n=== Over/Back Index Results ===');
-        console.log(`Score: ${index.score}`);
+        console.log(`Score: ${index.score.toFixed(2)}`);
         console.log(`Status: ${index.label}`);
         console.log(`Trend: ${trend}`);
         
@@ -71,7 +60,6 @@ async function testFullIndex() {
             console.log(`- Volume (SOL): ${metrics.metrics.volume.sol_amount.toLocaleString()}`);
             console.log(`- Volume Change: ${metrics.metrics.volume.change_percentage.toFixed(2)}%`);
             console.log(`- Activity Score: ${metrics.metrics.activity_score.toFixed(2)}`);
-            console.log(`- Mock Sentiment: ${twitterData.tokens[token].sentiment.toFixed(2)}`);
         }
 
     } catch (error) {

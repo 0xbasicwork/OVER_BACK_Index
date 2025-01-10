@@ -4,49 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OVER/BACK Index</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 </head>
 <body>
     <div class="container">
-        <h1>OVER/BACK Index</h1>
-        
-        <% if (error) { %>
-            <div class="error"><%= error %></div>
-        <% } else { %>
-            <div class="score-container">
-                <div class="score"><%= score %></div>
-                <div class="label"><%= label %></div>
-            </div>
+        <header>
+            <h1>OVER/BACK Index</h1>
+            <div class="update-time">Last updated: <%= new Date(lastUpdated).toISOString().replace('T', ' ').slice(0, 19) + ' UTC' %></div>
+        </header>
 
-            <div class="components">
-                <h2>Components</h2>
-                <div class="component">
-                    <span>Market Data (40%)</span>
-                    <div class="bar">
-                        <div class="fill" style="width: <%= components.market %>%"></div>
+        <main>
+            <% if (error) { %>
+                <div class="error"><%= error %></div>
+            <% } else { %>
+                <div class="score-container">
+                    <div class="meter">
+                        <div class="meter-arc"></div>
+                        <div class="meter-color-left"></div>
+                        <div class="meter-color-right"></div>
+                        <div class="meter-ticks">
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                            <div class="meter-tick"></div>
+                        </div>
+                        <div class="meter-pointer" style="--score: <%= score %>"></div>
+                        <div class="meter-center"></div>
                     </div>
-                    <span><%= Math.round(components.market) %>%</span>
+                    <div class="score"><%= score %></div>
+                    <div class="label" data-score="<%= score %>"><%= label %></div>
                 </div>
-                <div class="component">
-                    <span>Social Sentiment (15%)</span>
-                    <div class="bar">
-                        <div class="fill" style="width: <%= components.sentiment %>%"></div>
-                    </div>
-                    <span><%= Math.round(components.sentiment) %>%</span>
-                </div>
-                <div class="component">
-                    <span>On-chain Activity (45%)</span>
-                    <div class="bar">
-                        <div class="fill" style="width: <%= components.onChain %>%"></div>
-                    </div>
-                    <span><%= Math.round(components.onChain) %>%</span>
-                </div>
-            </div>
 
-            <div class="last-updated">
-                Last updated: <%= lastUpdated %>
-            </div>
-        <% } %>
+                <div class="components">
+                    <h2>Components</h2>
+                    <div class="component">
+                        <div class="component-header">
+                            <span>Market Data <span class="weight">(40%)</span></span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar">
+                                <div class="fill" style="width: <%= components.market %>%"></div>
+                            </div>
+                            <span class="value"><%= Math.round(components.market) %>%</span>
+                        </div>
+                    </div>
+
+                    <div class="component">
+                        <div class="component-header">
+                            <span>Social Sentiment <span class="weight">(15%)</span></span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar">
+                                <div class="fill" style="width: <%= components.sentiment %>%"></div>
+                            </div>
+                            <span class="value"><%= Math.round(components.sentiment) %>%</span>
+                        </div>
+                    </div>
+
+                    <div class="component">
+                        <div class="component-header">
+                            <span>On-chain Activity <span class="weight">(45%)</span></span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar">
+                                <div class="fill" style="width: <%= components.onChain %>%"></div>
+                            </div>
+                            <span class="value"><%= Math.round(components.onChain) %>%</span>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </main>
+
+        <footer>
+            <p>Data updates daily at 12:00 UTC</p>
+        </footer>
     </div>
+    <script src="/js/main.js"></script>
 </body>
 </html> 

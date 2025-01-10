@@ -45,6 +45,36 @@ app.get('/', async (req, res) => {
     }
 });
 
+// Widget route
+app.get('/widget', async (req, res) => {
+    // Same data fetching as main route
+    const data = {/* ... */};
+    res.render('widget', data);
+});
+
+// Widget embed code route
+app.get('/embed.js', (req, res) => {
+    res.type('application/javascript');
+    res.send(`
+        (function() {
+            const container = document.createElement('div');
+            container.style.width = '100%';
+            container.style.maxWidth = '400px';
+            container.style.margin = '0 auto';
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = '${process.env.BASE_URL}/widget';
+            iframe.style.width = '100%';
+            iframe.style.height = '400px';
+            iframe.style.border = 'none';
+            iframe.style.overflow = 'hidden';
+            
+            container.appendChild(iframe);
+            document.currentScript.parentElement.appendChild(container);
+        })();
+    `);
+});
+
 // Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
