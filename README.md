@@ -15,9 +15,9 @@ A fear & greed style index for Solana memecoins, analyzing on-chain data, social
 
 ## Components
 
-- Market Data (40%): Price action, volume, and market cap changes
-- Social Sentiment (15%): Twitter engagement and sentiment analysis
-- On-chain Activity (45%): Transaction volume, wallet activity, and success rates
+- Market Data (38%): Price action, volume, and market cap changes
+- Social Sentiment (30%): Twitter engagement and sentiment analysis
+- On-chain Activity (32%): Transaction volume, wallet activity, and success rates
 
 ## Setup
 1. Install dependencies: `npm install`

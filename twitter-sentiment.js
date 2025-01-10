@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const natural = require('natural');
+const { CORE_TOKENS } = require('./token-config');
 const tokenizer = new natural.WordTokenizer();
 const Analyzer = require('natural').SentimentAnalyzer;
 const stemmer = require('natural').PorterStemmer;
@@ -12,15 +13,16 @@ const TWITTER_API_BASE_URL = 'https://api.twitter.com/2';
 // Configure Twitter API credentials
 const TWITTER_BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
 
-// Keywords and hashtags to track
-const MEMECOIN_KEYWORDS = {
-    'BONK': ['$BONK', '#BONK', 'bonkcoin', 'bonksolana'],
-    'SAMO': ['$SAMO', '#SAMO', 'samoyedcoin'],
-    'WIF': ['$WIF', '#WIF', 'dogwifhat'],
-    'POPCAT': ['$POPCAT', '#POPCAT', 'popcatsolana'],
-    'BOME': ['$BOME', '#BOME', 'bookofmeme'],
-    'MYRO': ['$MYRO', '#MYRO', 'myrocoin']
-};
+// Generate keywords from CORE_TOKENS
+const MEMECOIN_KEYWORDS = Object.entries(CORE_TOKENS).reduce((acc, [name, data]) => {
+    acc[name] = [
+        `$${name}`,
+        `#${name}`,
+        `${name.toLowerCase()}coin`,
+        `${name.toLowerCase()}solana`
+    ];
+    return acc;
+}, {});
 
 // Add rate limit handling constants
 const INITIAL_RETRY_DELAY = 5000; // 5 seconds

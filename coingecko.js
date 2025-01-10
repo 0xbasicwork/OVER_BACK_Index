@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { CORE_TOKENS, MARKET_TOKENS } = require('./token-config');
+const { CORE_TOKENS } = require('./token-config');
 require('dotenv').config();
 
 class CoinGecko {
@@ -10,14 +10,11 @@ class CoinGecko {
     }
 
     getValidTokenIds() {
-        const coreIds = Object.values(CORE_TOKENS)
-            .map(token => token.coingeckoId)
-            .filter(id => id !== null);
+        const coreIds = Object.values(CORE_TOKENS || {})
+            .map(token => token?.coingeckoId)
+            .filter(id => id !== null && id !== undefined);
         
-        const marketIds = Object.values(MARKET_TOKENS)
-            .map(token => token.coingeckoId);
-        
-        return [...coreIds, ...marketIds];
+        return [...coreIds];
     }
 
     async getMarketData() {
@@ -67,9 +64,16 @@ class CoinGecko {
                 token_count: availableTokens.length
             };
         } catch (error) {
-            const errorMessage = error.response?.data?.error || error.message;
-            console.error('Failed to fetch CoinGecko data:', errorMessage);
-            throw new Error(`CoinGecko API Error: ${errorMessage}`);
+            console.error('Failed to fetch CoinGecko data:', error.message);
+            // Return default values on error
+            return {
+                price_change_percentage_24h: 0,
+                volume_change_24h: 0,
+                market_cap_change_percentage_24h: 0,
+                change_percentage: 0,
+                available_tokens: [],
+                token_count: 0
+            };
         }
     }
 }

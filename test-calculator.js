@@ -1,72 +1,56 @@
 const OverBackCalculator = require('./over-back-calculator');
-const DataStorage = require('./data-storage');
-const CoinGecko = require('./coingecko');
-const mockData = require('./mock-data');
 
-async function testFullIndex() {
-    try {
-        console.log('\n=== Testing Over/Back Index ===\n');
-        
-        // Initialize components
-        const calculator = new OverBackCalculator();
-        const storage = new DataStorage();
-        const coingecko = new CoinGecko();
-        
-        await storage.initialize();
+// Sample market data structure
+const sampleMarketData = {
+    price_change_percentage_24h: 5.2,
+    volume_change_24h: 15.5,
+    market_cap_change_percentage_24h: 4.8
+};
 
-        // Use mock on-chain data
-        console.log('Using mock on-chain metrics...');
-        const onChainData = mockData;
-        console.log('On-chain data loaded');
+// Sample Twitter data structure
+const sampleTwitterData = {
+    overall_metrics: {
+        sentiment_score: 0.15,
+        engagement_rate: 0.02,
+        tweet_volume_change: 10
+    }
+};
 
-        // Get real market data
-        console.log('\nFetching market data...');
-        const marketData = await coingecko.getMarketData();
-        console.log('Market data collected');
-
-        // Mock Twitter data
-        console.log('\nUsing mock social sentiment data...');
-        const twitterData = {
-            overall_metrics: {
-                sentiment_score: 0.03,
-                engagement_rate: 0.015,
-                tweet_volume_change: 5
-            }
-        };
-
-        // Calculate index
-        console.log('\nCalculating Over/Back Index...');
-        const index = calculator.calculateIndex(marketData, twitterData, onChainData);
-        
-        // Store result
-        await storage.storeDaily(index);
-        const trend = await storage.getTrend();
-
-        // Display detailed results
-        console.log('\n=== Over/Back Index Results ===');
-        console.log(`Score: ${index.score.toFixed(2)}`);
-        console.log(`Status: ${index.label}`);
-        console.log(`Trend: ${trend}`);
-        
-        console.log('\nComponent Scores:');
-        console.log('Market Data (40%):', Math.round(index.components.market));
-        console.log('Social Sentiment (15%):', Math.round(index.components.sentiment), '(using mock data)');
-        console.log('On-chain Activity (45%):', Math.round(index.components.onChain));
-
-        console.log('\nToken Details:');
-        for (const [token, metrics] of Object.entries(onChainData.token_metrics)) {
-            console.log(`\n${token}:`);
-            console.log(`- Transactions: ${metrics.metrics.transactions.count_24h.toLocaleString()}`);
-            console.log(`- Volume (SOL): ${metrics.metrics.volume.sol_amount.toLocaleString()}`);
-            console.log(`- Volume Change: ${metrics.metrics.volume.change_percentage.toFixed(2)}%`);
-            console.log(`- Activity Score: ${metrics.metrics.activity_score.toFixed(2)}`);
+// Sample on-chain data structure
+const sampleOnChainData = {
+    market_metrics: {
+        average_activity_score: 65.5,
+        average_error_rate: 0.2,
+        volume: {
+            change_percentage: 25.5
         }
+    }
+};
 
+async function testCalculator() {
+    try {
+        const calculator = new OverBackCalculator();
+        
+        // Calculate index with sample data
+        const result = calculator.calculateIndex(
+            sampleMarketData,
+            sampleTwitterData,
+            sampleOnChainData
+        );
+        
+        console.log('\nTest Results:');
+        console.log('=============');
+        console.log(`Overall Score: ${result.score}`);
+        console.log(`Status: ${result.label}`);
+        console.log('\nComponent Scores:');
+        console.log('----------------');
+        console.log(`Market Score: ${result.components.market.toFixed(2)}`);
+        console.log(`Sentiment Score: ${result.components.sentiment.toFixed(2)}`);
+        console.log(`On-Chain Score: ${result.components.onChain.toFixed(2)}`);
     } catch (error) {
         console.error('Test failed:', error);
-        console.error('Stack trace:', error.stack);
     }
 }
 
 // Run the test
-testFullIndex(); 
+testCalculator(); 

@@ -1,9 +1,9 @@
 class OverBackCalculator {
-    // Further adjusted weights to be more conservative
+    // Adjusted weights with further increased social sentiment
     static WEIGHTS = {
-        MARKET_DATA: 40,      // Increased market influence more
-        SOCIAL_SENTIMENT: 15,  // Further reduced social weight
-        ON_CHAIN: 45          // Kept on-chain as is
+        MARKET_DATA: 38,      // Increased market influence
+        SOCIAL_SENTIMENT: 30,  // Further increased from 25
+        ON_CHAIN: 32          // Reduced to balance
     };
 
     constructor() {
@@ -20,10 +20,10 @@ class OverBackCalculator {
     }
 
     calculateIndex(marketData, twitterData, onChainData) {
-        // Calculate individual components
-        const marketScore = this.calculateMarketScore(marketData);
-        const sentimentScore = this.calculateSentimentScore(twitterData);
-        const onChainScore = this.calculateOnChainScore(onChainData);
+        // Calculate individual components with default values if undefined
+        const marketScore = this.calculateMarketScore(marketData) || 50;
+        const sentimentScore = this.calculateSentimentScore(twitterData) || 50;
+        const onChainScore = this.calculateOnChainScore(onChainData) || 50;
 
         // Combine weighted scores
         const totalScore = (
@@ -32,11 +32,14 @@ class OverBackCalculator {
             onChainScore * OverBackCalculator.WEIGHTS.ON_CHAIN) / 100
         );
 
+        // Ensure the score is valid
+        const validScore = Math.max(0, Math.min(100, totalScore || 50));
+
         // Get corresponding label
-        const label = this.getScaleLabel(totalScore);
+        const label = this.getScaleLabel(validScore);
 
         return {
-            score: Math.round(totalScore),
+            score: Math.round(validScore),
             label,
             components: {
                 market: marketScore,
@@ -52,6 +55,7 @@ class OverBackCalculator {
     }
 
     calculateMarketScore(marketData) {
+        if (!marketData) return 50;
         const metrics = this.normalizeMarketMetrics(marketData);
         
         return (
@@ -62,6 +66,7 @@ class OverBackCalculator {
     }
 
     calculateSentimentScore(twitterData) {
+        if (!twitterData?.overall_metrics) return 50;
         const metrics = this.normalizeSentimentMetrics(twitterData);
         
         return (
@@ -72,6 +77,7 @@ class OverBackCalculator {
     }
 
     calculateOnChainScore(onChainData) {
+        if (!onChainData?.market_metrics) return 50;
         const metrics = this.normalizeOnChainMetrics(onChainData);
         
         return (
@@ -82,32 +88,81 @@ class OverBackCalculator {
     }
 
     normalizeMarketMetrics(marketData) {
+        if (!marketData) return {
+            priceChange: 0.5,
+            volumeChange: 0.5,
+            marketCapChange: 0.5
+        };
+
         return {
-            // Even more conservative ranges for market metrics
-            priceChange: this.normalize(marketData.price_change_percentage_24h, -20, 20),
-            volumeChange: this.normalize(marketData.volume_change_24h, -50, 50),
-            marketCapChange: this.normalize(marketData.market_cap_change_percentage_24h, -25, 25)
+            priceChange: this.normalize(marketData.price_change_percentage_24h || 0, -20, 20),
+            volumeChange: this.normalize(marketData.volume_change_24h || 0, -50, 50),
+            marketCapChange: this.normalize(marketData.market_cap_change_percentage_24h || 0, -25, 25)
         };
     }
 
     normalizeSentimentMetrics(twitterData) {
+        if (!twitterData?.overall_metrics) return {
+            sentimentScore: 0.5,
+            engagementScore: 0.5,
+            volumeScore: 0.5
+        };
+
         return {
-            // Stricter sentiment normalization
-            sentimentScore: this.normalize(twitterData.overall_metrics.sentiment_score, -0.3, 0.3),
-            engagementScore: this.normalize(twitterData.overall_metrics.engagement_rate, 0, 0.03),
-            volumeScore: this.normalize(twitterData.overall_metrics.tweet_volume_change, -30, 30)
+            sentimentScore: this.normalize(twitterData.overall_metrics.sentiment_score || 0, -0.3, 0.3),
+            engagementScore: this.normalize(twitterData.overall_metrics.engagement_rate || 0, 0, 0.03),
+            volumeScore: this.normalize(twitterData.overall_metrics.tweet_volume_change || 0, -30, 30)
         };
     }
 
     normalizeOnChainMetrics(onChainData) {
-        return {
-            activityScore: this.normalize(onChainData.market_metrics.average_activity_score, 0, 60),
-            successRate: 1 - (onChainData.market_metrics.average_error_rate * 2),
-            volumeScore: this.normalize(onChainData.market_metrics.volume.change_percentage, -50, 50)
-        };
+        try {
+            if (!onChainData?.market_metrics) return {
+                activityScore: 0.5,
+                successRate: 0.5,
+                volumeScore: 0.5
+            };
+
+            // Get the volume change percentage, default to 0 if not available
+            const volumeChange = onChainData.market_metrics?.volume?.change_percentage ?? 0;
+            
+            // Normalize metrics to 0-1 scale
+            const activityScore = this.normalize(
+                onChainData.market_metrics?.average_activity_score ?? 50, 
+                0, 
+                100
+            );
+            
+            const successRate = 1 - this.normalize(
+                onChainData.market_metrics?.average_error_rate ?? 0,
+                0,
+                1
+            );
+            
+            const volumeScore = this.normalize(
+                volumeChange,
+                -50,
+                50
+            );
+            
+            return {
+                activityScore,
+                successRate,
+                volumeScore
+            };
+        } catch (error) {
+            console.error('Error normalizing on-chain metrics:', error);
+            // Return default values if normalization fails
+            return {
+                activityScore: 0.5,
+                successRate: 0.5,
+                volumeScore: 0.5
+            };
+        }
     }
 
     normalize(value, min, max) {
+        if (typeof value !== 'number' || isNaN(value)) return 0.5;
         return Math.max(0, Math.min(1, (value - min) / (max - min)));
     }
 

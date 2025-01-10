@@ -1,0 +1,4 @@
+<invoke name="codebase_search">
+<parameter name="explanation">Checking how data is being stored and retrieved.</parameter>
+<parameter name="query">data storage getLatest storeDaily</parameter>
+</invoke> 

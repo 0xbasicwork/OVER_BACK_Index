@@ -28,19 +28,18 @@ module.exports = {
         'BACK': {
             contract: 'AUiXW4YH5TLNFBgVayFBRvgWTz2ApeeM1Br7FCoyrugj',
             coingeckoId: null  // Not yet listed
-        }
-    },
-
-    // Additional market tracking tokens
-    MARKET_TOKENS: {
+        },
         'GIGACHAD': {
+            contract: '63LfDmNb3MQ8mw9MtZ2To9bEA2M71kZUUGq5tiJxcqj9',
             coingeckoId: 'gigachad-2'
         },
-        'PEANUT': {
+        'PNUT': {
+            contract: '2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump',
             coingeckoId: 'peanut-the-squirrel'
         },
         'MOODENG': {
+            contract: 'ED5nyyWEzpPPiWimP8vYm7sD7TD3LAt3Q3gRTWHzPJBY',
             coingeckoId: 'moo-deng'
         }
     }
-}; 
+};

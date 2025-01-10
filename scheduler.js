@@ -1,8 +1,9 @@
 const schedule = require('node-schedule');
 const OverBackCalculator = require('./over-back-calculator');
 const DataStorage = require('./data-storage');
-// Import any other required data sources
 const CoinGecko = require('./coingecko');
+const TwitterSentiment = require('./twitter-sentiment');
+const { SolanaDataCollector } = require('./solana-data');
 
 async function calculateAndStoreIndex() {
     try {
@@ -10,38 +11,22 @@ async function calculateAndStoreIndex() {
         const calculator = new OverBackCalculator();
         const storage = new DataStorage();
         const coingecko = new CoinGecko();
+        const solanaCollector = new SolanaDataCollector();
         
         await storage.initialize();
 
-        // Get real data from your sources
+        // Get real data from all sources
         const marketData = await coingecko.getMarketData();
-        // Get Twitter data from your Twitter service
-        // Get on-chain data from your blockchain service
-        
-        // For now using mock data (replace with real data later)
-        const mockTwitterData = {
-            overall_metrics: {
-                sentiment_score: 0.03,
-                engagement_rate: 0.015,
-                tweet_volume_change: 5
-            }
-        };
-        
-        const mockOnChainData = {
-            market_metrics: {
-                average_activity_score: 35.5,
-                average_error_rate: 0.3,
-                volume: {
-                    current_24h: 25000,
-                    previous_24h: 30000,
-                    change_percentage: -16.67
-                },
-                total_transactions_24h: 2500
-            }
-        };
+        const twitterData = await TwitterSentiment.fetchAllMemecoinSentiment();
+        const onChainData = await solanaCollector.getAllMemecoinMetrics();
 
-        // Calculate index
-        const index = calculator.calculateIndex(marketData, mockTwitterData, mockOnChainData);
+        console.log('\nData being passed to calculator:');
+        console.log('Market Data:', JSON.stringify(marketData, null, 2));
+        console.log('Twitter Data:', JSON.stringify(twitterData, null, 2));
+        console.log('On-Chain Data:', JSON.stringify(onChainData, null, 2));
+
+        // Calculate index using real data
+        const index = calculator.calculateIndex(marketData, twitterData, onChainData);
         
         // Store result
         await storage.storeDaily(index);
@@ -55,10 +40,10 @@ async function calculateAndStoreIndex() {
     }
 }
 
-// Schedule daily updates at 8:00 AM EST
+// Schedule daily updates at 12:00 UTC
 const rule = new schedule.RecurrenceRule();
-rule.tz = 'America/New_York';
-rule.hour = 8;
+rule.tz = 'UTC';
+rule.hour = 12;
 rule.minute = 0;
 
 schedule.scheduleJob(rule, calculateAndStoreIndex);
@@ -66,4 +51,4 @@ schedule.scheduleJob(rule, calculateAndStoreIndex);
 // Run immediately on startup
 calculateAndStoreIndex();
 
-console.log('Over & Back Index scheduler started. Will update daily at 8:00 AM EST'); 
+console.log('Over & Back Index scheduler started. Will update daily at 12:00 UTC'); 

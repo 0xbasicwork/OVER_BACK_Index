@@ -12,7 +12,16 @@
         <header>
             <h1>OVER/BACK Index</h1>
             <div class="update-time">
-                Last updated: <%= lastUpdated ? new Date(lastUpdated).toLocaleString() + ' UTC' : 'Not available' %>
+                Last updated: <%= lastUpdated ? new Date(lastUpdated).toLocaleString('en-GB', { 
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'UTC'
+                }) + ' UTC' : 'Not available' %>
             </div>
         </header>
 
@@ -45,14 +54,13 @@
                 </div>
 
                 <div class="components">
-                    <h2>Components</h2>
                     <div class="component">
                         <div class="component-header">
-                            <span>Market Data <span class="weight">(40%)</span></span>
+                            <span>Market Data</span>
                         </div>
                         <div class="bar-container">
                             <div class="bar">
-                                <div class="fill" style="width: <%= components.market %>%"></div>
+                                <div class="fill" style="width: <%= components.market %>%;"></div>
                             </div>
                             <span class="value"><%= Math.round(components.market) %>%</span>
                         </div>
@@ -60,11 +68,11 @@
 
                     <div class="component">
                         <div class="component-header">
-                            <span>Social Sentiment <span class="weight">(15%)</span></span>
+                            <span>Social Sentiment</span>
                         </div>
                         <div class="bar-container">
                             <div class="bar">
-                                <div class="fill" style="width: <%= components.sentiment %>%"></div>
+                                <div class="fill" style="width: <%= components.sentiment %>%;"></div>
                             </div>
                             <span class="value"><%= Math.round(components.sentiment) %>%</span>
                         </div>
@@ -72,11 +80,11 @@
 
                     <div class="component">
                         <div class="component-header">
-                            <span>On-chain Activity <span class="weight">(45%)</span></span>
+                            <span>On-chain Activity</span>
                         </div>
                         <div class="bar-container">
                             <div class="bar">
-                                <div class="fill" style="width: <%= components.onChain %>%"></div>
+                                <div class="fill" style="width: <%= components.onChain %>%;"></div>
                             </div>
                             <span class="value"><%= Math.round(components.onChain) %>%</span>
                         </div>

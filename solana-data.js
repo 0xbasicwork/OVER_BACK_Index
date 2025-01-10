@@ -1,23 +1,12 @@
 const web3 = require('@solana/web3.js');
 const splToken = require('@solana/spl-token');
+const { CORE_TOKENS } = require('./token-config');
 require('dotenv').config();
 
 // Add delay between requests
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const MEMECOIN_ADDRESSES = {
-    'BONK': 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-    'PENGU': '2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv',
-    'WIF': 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
-    'POPCAT': '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr',
-    'FART': '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump',
-    'AI16Z': 'HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC',
-    'BACK': 'AUiXW4YH5TLNFBgVayFBRvgWTz2ApeeM1Br7FCoyrugj'
-};
-
 class SolanaDataCollector {
-    static MEMECOIN_ADDRESSES = MEMECOIN_ADDRESSES;
-
     constructor() {
         // Use Helius RPC URL or fallback to public endpoint
         const rpcUrl = process.env.HELIUS_RPC_URL || 'https://api.mainnet-beta.solana.com';
@@ -25,6 +14,15 @@ class SolanaDataCollector {
             commitment: 'confirmed',
             maxSupportedTransactionVersion: 0
         });
+        this.retryCount = 0;
+    }
+
+    // Get all token addresses from CORE_TOKENS
+    static get MEMECOIN_ADDRESSES() {
+        return Object.entries(CORE_TOKENS).reduce((acc, [name, data]) => {
+            acc[name] = data.contract;
+            return acc;
+        }, {});
     }
 
     async getTokenMetrics(address) {
@@ -222,5 +220,5 @@ class SolanaDataCollector {
 
 module.exports = {
     SolanaDataCollector,
-    MEMECOIN_ADDRESSES
+    MEMECOIN_ADDRESSES: SolanaDataCollector.MEMECOIN_ADDRESSES
 }; 
