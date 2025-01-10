@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVER/BACK Index</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>OVER/BACK Index</h1>
+        
+        <% if (error) { %>
+            <div class="error"><%= error %></div>
+        <% } else { %>
+            <div class="score-container">
+                <div class="score"><%= score %></div>
+                <div class="label"><%= label %></div>
+            </div>
+
+            <div class="components">
+                <h2>Components</h2>
+                <div class="component">
+                    <span>Market Data (40%)</span>
+                    <div class="bar">
+                        <div class="fill" style="width: <%= components.market %>%"></div>
+                    </div>
+                    <span><%= Math.round(components.market) %>%</span>
+                </div>
+                <div class="component">
+                    <span>Social Sentiment (15%)</span>
+                    <div class="bar">
+                        <div class="fill" style="width: <%= components.sentiment %>%"></div>
+                    </div>
+                    <span><%= Math.round(components.sentiment) %>%</span>
+                </div>
+                <div class="component">
+                    <span>On-chain Activity (45%)</span>
+                    <div class="bar">
+                        <div class="fill" style="width: <%= components.onChain %>%"></div>
+                    </div>
+                    <span><%= Math.round(components.onChain) %>%</span>
+                </div>
+            </div>
+
+            <div class="last-updated">
+                Last updated: <%= lastUpdated %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html> 
