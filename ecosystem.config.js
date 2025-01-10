@@ -5,7 +5,7 @@ module.exports = {
     env: {
       NODE_ENV: "production",
       PORT: 3000,
-      BASE_URL: "https://your-vultr-domain.com"
+      BASE_URL: "https://sobackitsover.xyz/overbackindex"
     }
   }]
 }; 

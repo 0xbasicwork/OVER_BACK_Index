@@ -63,7 +63,7 @@ app.get('/embed.js', (req, res) => {
             container.style.margin = '0 auto';
             
             const iframe = document.createElement('iframe');
-            iframe.src = '${process.env.BASE_URL}/widget';
+            iframe.src = 'https://sobackitsover.xyz/overbackindex/widget';
             iframe.style.width = '100%';
             iframe.style.height = '400px';
             iframe.style.border = 'none';
