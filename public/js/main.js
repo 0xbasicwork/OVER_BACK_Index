@@ -15,12 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     animateScore();
 
     // Animate bars filling
-    const bars = document.querySelectorAll('.fill');
-    bars.forEach(bar => {
-        const width = bar.style.width;
+    document.querySelectorAll('.fill[data-width]').forEach(bar => {
+        const width = parseFloat(bar.getAttribute('data-width'));
         bar.style.width = '0';
         setTimeout(() => {
-            bar.style.width = width;
-        }, 100);
+            bar.style.width = width + '%';
+        }, 500);
     });
 });

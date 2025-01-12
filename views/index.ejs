@@ -60,7 +60,7 @@
                         </div>
                         <div class="bar-container">
                             <div class="bar">
-                                <div class="fill" style="width: <%= components.market %>%;"></div>
+                                <div class="fill" data-width="<%= components.market %>"></div>
                             </div>
                             <span class="value"><%= Math.round(components.market) %>%</span>
                         </div>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="bar-container">
                             <div class="bar">
-                                <div class="fill" style="width: <%= components.sentiment %>%;"></div>
+                                <div class="fill" data-width="<%= components.sentiment %>"></div>
                             </div>
                             <span class="value"><%= Math.round(components.sentiment) %>%</span>
                         </div>
@@ -84,7 +84,7 @@
                         </div>
                         <div class="bar-container">
                             <div class="bar">
-                                <div class="fill" style="width: <%= components.onChain %>%;"></div>
+                                <div class="fill" data-width="<%= components.onChain %>"></div>
                             </div>
                             <span class="value"><%= Math.round(components.onChain) %>%</span>
                         </div>
@@ -98,5 +98,15 @@
         </footer>
     </div>
     <script src="/js/main.js"></script>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.fill[data-width]').forEach(fill => {
+                const width = parseFloat(fill.getAttribute('data-width'));
+                const validWidth = Math.max(0, Math.min(100, width));
+                fill.style.setProperty('--progress', validWidth + '%');
+                fill.style.setProperty('--scale', validWidth / 100);
+            });
+        }, 500);
+    </script>
 </body>
 </html> 

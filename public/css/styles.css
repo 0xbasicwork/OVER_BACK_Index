@@ -6,10 +6,9 @@
     --card-bg: #f5f5f5;
     --bar-bg: #e0e0e0;
     --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --gradient-red: #ff4d4d;     /* Red */
-    --gradient-purple: #9966ff;  /* Purple */
-    --gradient-lightblue: #66b3ff;  /* Light Blue */
-    --gradient-blue: #0066ff;   /* Blue */
+    --gradient-red: #ff4d4d;
+    --gradient-yellow: #ffd700;
+    --gradient-green: #4CAF50;
 }
 
 body {
@@ -114,17 +113,37 @@ h1 {
     background: var(--bar-bg);
     border-radius: 10px;
     overflow: hidden;
+    position: relative;
 }
 
-.fill {
+.bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
     background: linear-gradient(90deg, 
         var(--gradient-red) 0%,
-        var(--gradient-purple) 33%,
-        var(--gradient-lightblue) 66%,
-        var(--gradient-blue) 100%
+        var(--gradient-yellow) 50%,
+        var(--gradient-green) 100%
     );
-    transition: width 1s ease;
+    opacity: 0.2;
+}
+
+.fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    background: linear-gradient(90deg, 
+        var(--gradient-red) 0%,
+        var(--gradient-yellow) 50%,
+        var(--gradient-green) 100%
+    );
+    background-size: calc(100% / var(--scale, 0.01)) 100%;
+    transition: width 0.5s ease-out;
 }
 
 .value {

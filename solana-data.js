@@ -2,6 +2,7 @@ const web3 = require('@solana/web3.js');
 const splToken = require('@solana/spl-token');
 const { CORE_TOKENS } = require('./token-config');
 require('dotenv').config();
+const axios = require('axios');
 
 // Add delay between requests
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -69,8 +70,8 @@ class SolanaDataCollector {
                 ? ((currentVolume - previousVolume) / previousVolume) * 100 
                 : 0;
 
-            // Get SOL price data (you might want to add this from CoinGecko)
-            const solPrice = 100; // Placeholder, integrate with CoinGecko
+            // Get SOL price from CoinGecko
+            const solPrice = await this.getSolPrice();
 
             // Simplified metrics return
             return {
@@ -92,7 +93,7 @@ class SolanaDataCollector {
                         recentSignatures.length,
                         volumeChange,
                         currentVolume,
-                        volumeChange  // Using same change for now, could be calculated separately
+                        volumeChange
                     )
                 }
             };
@@ -215,6 +216,22 @@ class SolanaDataCollector {
             average_error_rate: Object.values(metrics).reduce((sum, token) => 
                 sum + token.metrics.transactions.error_rate, 0) / Object.values(metrics).length
         };
+    }
+
+    // Add method to get SOL price
+    async getSolPrice() {
+        try {
+            const response = await axios.get('https://api.coingecko.com/api/v3/simple/price', {
+                params: {
+                    ids: 'solana',
+                    vs_currencies: 'usd'
+                }
+            });
+            return response.data.solana.usd;
+        } catch (error) {
+            console.error('Failed to fetch SOL price:', error);
+            return 0; // Return 0 instead of a hardcoded value
+        }
     }
 }
 
