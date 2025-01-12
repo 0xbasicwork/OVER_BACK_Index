@@ -6,102 +6,83 @@ const DataStorage = require('./data-storage');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Add CORS middleware
-app.use(cors());
+// CORS configuration
+const corsOptions = {
+    origin: ['https://sobackitsover.xyz', 'http://localhost:3000'],
+    methods: ['GET'],
+    optionsSuccessStatus: 200
+};
 
-// Set EJS as templating engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.use(cors(corsOptions));
 app.use(express.static('public'));
 
 // Create storage instance
 const storage = new DataStorage();
 
-// Routes
-app.get('/', async (req, res) => {
+// API Routes
+app.get('/api/latest', async (req, res) => {
     try {
-        // Get latest index data
         const latestData = await storage.getLatest();
         
+        // Set cache headers
+        res.set({
+            'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+            'Access-Control-Allow-Origin': corsOptions.origin
+        });
+
         if (!latestData) {
-            return res.render('index', {
-                error: 'No index data available yet',
-                lastUpdated: null
+            return res.status(404).json({
+                error: 'No index data available',
+                timestamp: new Date().toISOString()
             });
         }
 
-        // Format the timestamp
-        const lastUpdated = new Date(latestData.timestamp).toLocaleString();
-
-        res.render('index', {
+        res.json({
             score: latestData.score,
             label: latestData.label,
             components: latestData.components,
-            lastUpdated: latestData.timestamp || new Date().toISOString(),
-            error: null
+            timestamp: latestData.timestamp
         });
     } catch (error) {
-        console.error('Error fetching index:', error);
-        res.render('index', {
-            error: 'Failed to load index data',
-            lastUpdated: null
+        console.error('Error fetching latest data:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch data',
+            timestamp: new Date().toISOString()
         });
     }
 });
 
-// Widget route
-app.get('/widget', async (req, res) => {
+app.get('/api/history', async (req, res) => {
     try {
-        // Get latest index data
-        const latestData = await storage.getLatest();
+        const days = parseInt(req.query.days) || 30;
+        const history = await storage.getHistory(days);
         
-        if (!latestData) {
-            return res.render('widget', {
-                error: 'No index data available yet',
-                lastUpdated: null
-            });
-        }
-
-        // Format the timestamp
-        const lastUpdated = new Date(latestData.timestamp).toLocaleString();
-
-        res.render('widget', {
-            score: latestData.score,
-            label: latestData.label,
-            components: latestData.components,
-            lastUpdated,
-            error: null
+        res.set({
+            'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+            'Access-Control-Allow-Origin': corsOptions.origin
         });
+
+        res.json(history);
     } catch (error) {
-        console.error('Error fetching index:', error);
-        res.render('widget', {
-            error: 'Failed to load index data',
-            lastUpdated: null
-        });
+        console.error('Error fetching history:', error);
+        res.status(500).json({ error: 'Failed to fetch history' });
     }
 });
 
-// Widget embed code route
-app.get('/embed.js', (req, res) => {
-    res.type('application/javascript');
-    res.send(`
-        (function() {
-            const container = document.createElement('div');
-            container.style.width = '100%';
-            container.style.maxWidth = '400px';
-            container.style.margin = '0 auto';
-            
-            const iframe = document.createElement('iframe');
-            iframe.src = 'https://sobackitsover.xyz/overbackindex/widget';
-            iframe.style.width = '100%';
-            iframe.style.height = '400px';
-            iframe.style.border = 'none';
-            iframe.style.overflow = 'hidden';
-            
-            container.appendChild(iframe);
-            document.currentScript.parentElement.appendChild(container);
-        })();
-    `);
+app.get('/api/trend', async (req, res) => {
+    try {
+        const trend = await storage.getTrend();
+        
+        res.set({
+            'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+            'Access-Control-Allow-Origin': corsOptions.origin
+        });
+
+        res.json({ trend });
+    } catch (error) {
+        console.error('Error fetching trend:', error);
+        res.status(500).json({ error: 'Failed to fetch trend' });
+    }
 });
 
 // Start server
