@@ -68,7 +68,7 @@ rule.minute = 0;
 
 schedule.scheduleJob(rule, calculateAndStoreIndex);
 
-// Run immediately on startup
-calculateAndStoreIndex();
+// Remove immediate execution on startup
+// calculateAndStoreIndex();
 
 console.log('Over & Back Index scheduler started. Will update daily at 12:00 UTC'); 
